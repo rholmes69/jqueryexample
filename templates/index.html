@@ -1,0 +1,293 @@
+{% extends "layout.html" %} {% block body %}
+<script type="text/javascript">
+    $(function() {
+        var _server = 'http://localhost:5000';
+        
+        // var $SCRIPT_ROOT = {
+                
+        //             request.script_root | tojson | safe
+                
+        //     };
+        // Fetch the name of the first pet from each owner
+        var ownerArr = [{
+            "owner": "Colin",
+            "pets": [{
+                "name": "dog1"
+            }, {
+                "name": "dog2"
+            }]
+        }, {
+            "owner": "John",
+            "pets": [{
+                "name": "dog3"
+            }, {
+                "name": "dog4"
+            }]
+        }];
+
+        // Array's map method.
+        ownerArr.map(function(owner) {
+            return owner.pets[0].name;
+        });
+
+        // Lodash
+        var petName = _.map(ownerArr, 'pets[0].name');
+        console.log(petName);
+
+        // Create an array of length 6 and populate them with unique values. The value must be prefix with "ball_".
+        // eg. [ball_0, ball_1, ball_2, ball_3, ball_4, ball_5]
+
+        // Array's map method.
+        Array.apply(null, Array(6)).map(function(item, index) {
+            return "ball_" + index;
+        });
+
+
+        // Lodash
+        var balls = _.times(6, _.uniqueId.bind(null, 'ball_'));
+        console.log(balls);
+
+        var users = [{
+            name: 'Alex',
+            age: 30,
+            is_premium: true,
+            employment_status: 'employed'
+        }, {
+            name: 'Bob',
+            age: 20,
+            is_premium: false,
+            employment_status: 'unemployed'
+
+        }, {
+            name: 'Mary C',
+            age: 25,
+            is_premium: true,
+            employment_status: 'employed'
+        }, {
+            name: 'Karl A',
+            age: 23,
+            is_premium: false,
+            employment_status: 'employed'
+        }, {
+            name: 'Mary B',
+            age: 30,
+            is_premium: true,
+            employment_status: 'employed'
+        }, {
+            name: 'Mary G',
+            age: 32,
+            is_premium: false,
+            employment_status: 'employed'
+        }];
+
+        var current_user_count = 0;
+        var current_user = users[current_user_count];
+
+        function updateUserView() {
+
+            //debugger;
+            //console.log(current_user)
+
+            $('#user_name').val(current_user.name);
+            $('#user_age').val(current_user.age);
+
+            $('#user_premium').prop('checked', current_user.is_premium);
+
+            $("#employment_status option").filter(function() {
+                //may want to use $.trim in here
+                return $(this).text() == $.trim(current_user.employment_status);
+            }).prop('selected', true);
+        }
+
+        $('#btnFirst').click(function() {
+            current_user_count = 0;
+            current_user = users[current_user_count];
+            updateUserView();
+        })
+
+        $('#btnNext').click(function() {
+            if (current_user_count != users.length - 1)
+                current_user_count++;
+            current_user = users[current_user_count];
+            updateUserView();
+        })
+
+        $('#btnBack').click(function() {
+
+            if (current_user_count != 0)
+                current_user_count--;
+            else
+                current_user_count = 0;
+
+            current_user = users[current_user_count];
+
+            updateUserView();
+        })
+
+        $('#btnLast').bind('click', function(e) {
+            current_user = users[users.length - 1];
+            updateUserView();
+        })
+
+        updateUserView();
+
+        var submit_form = function(e) {
+            //alert(e);
+            $.getJSON(_server +'/_add_numbers', {
+                a: $('input[name="a"]').val(),
+                b: $('input[name="b"]').val()
+            }, function(data) {
+                //alert(data);
+                $('#result').text(data.result);
+                $('input[name=a]').focus().select();
+            });
+            return false;
+        };
+
+        $('#calculate').bind('click', submit_form);
+
+        $('input[type=text]').bind('keydown', function(e) {
+            if (e.keyCode == 13) {
+                submit_form(e);
+            }
+        });
+
+        $('input[name=a]').focus();
+    });
+</script>
+<div class="row">
+    <h1>jQuery Example</h1>
+
+    <p>
+
+        <div class="btn-toolbar" id="btnToolBar">
+            <div class="btn-group">
+
+                <button type="button" id="btnFirst" class="btn btn-info"><i class="fa fa-ban fa-fw"></i>First</button>
+
+            </div>
+            <div class="btn-group">
+
+                <button type="button" id="btnNext" class="btn btn-info"><i class="fa fa-ban fa-fw"></i>Next</button>
+
+            </div>
+
+            <div class="btn-group">
+
+                <button type="button" id="btnBack" class="btn btn-warning"><i class="fa fa-ban fa-fw"></i>Back</button>
+
+            </div>
+
+            <div class="btn-group">
+
+                <button type="button" id="btnLast" class="btn btn-danger"><i class="fa fa-circle-o-notch fa-spin"></i>Last</button>
+
+            </div>
+
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">User Information</h3>
+            </div>
+            <div class="panel-body">
+
+                <form action="" method="POST" class="form-inline" role="form">
+
+                    <label class="sr-only" for="">Email</label>
+                    <input type="email" class="form-control" id="" placeholder="Input field">
+                    <label class="sr-only" for="">Name</label>
+                    <input type="text" class="form-control" size="5" name="user_name" id="user_name">
+                    <label class="sr-only" for="">Age</label>
+                    <input type="text" class="form-control" size="5" name="user_age" id="user_age">
+                    <label class="sr-only" for="">Premium</label>
+                    <input type="checkbox"  id="user_premium">
+                    <div class="form-group">
+                        <label for="input" class="col-sm-2 control-label">:</label>
+                        <div class="col-sm-10">
+                            <select name="employment_status" id="employment_status" class="form-control" required="required">
+                                <option value="employed">employed</option>
+                                <option value="unemployed">unemployed</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+
+            </div>
+        </div>
+
+    </p>
+
+
+</div>
+
+<i class="fa fa-spinner fa-spin"></i>
+<i class="fa fa-circle-o-notch fa-spin"></i>
+<i class="fa fa-refresh fa-spin"></i>
+<i class="fa fa-cog fa-spin"></i>
+<i class="fa fa-spinner fa-pulse"></i>
+
+<p>
+    <input type="text" size="5" name="a"> +
+    <input type="text" size="5" name="b"> =
+    <span id="result">?</span>
+    <p>
+        <!--<a href=# id="calculate">calculate server side</a>-->
+
+        <button id="calculate" type="button" class="btn btn-success"> 
+                <i class="fa fa-ban fa-fw"></i> calculate server side</button>
+
+        <a class="btn btn-danger" href="#">
+            <i class="fa fa-trash-o fa-lg"></i> Delete</a>
+        <a class="btn btn-default btn-sm" href="#">
+            <i class="fa fa-cog"></i> Settings</a>
+
+        <a class="btn btn-lg btn-success" href="#">
+            <i class="fa fa-flag fa-2x pull-left"></i> Font Awesome<br>Version 4.5.0</a>
+
+        <div class="row">
+
+            <div class="well well-sm">
+                Good
+            </div>
+
+
+            <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+
+
+
+                <div class="btn-group">
+                    <a class="btn btn-default" href="#"><i class="fa fa-align-left"></i></a>
+                    <a class="btn btn-default" href="#"><i class="fa fa-align-center"></i></a>
+                    <a class="btn btn-default" href="#"><i class="fa fa-align-right"></i></a>
+                    <a class="btn btn-default" href="#"><i class="fa fa-align-justify"></i></a>
+                </div>
+                <hr>
+                <div class="input-group margin-bottom-sm">
+                    <span class="input-group-addon"><i class="fa fa-envelope-o fa-fw"></i></span>
+                    <input class="form-control" type="text" placeholder="Email address">
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
+                    <input class="form-control" type="password" placeholder="Password">
+                </div>
+
+                <div class="btn-group open">
+                    <a class="btn btn-primary" href="#"><i class="fa fa-user fa-fw"></i> User</a>
+                    <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
+                        <span class="fa fa-caret-down"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#"><i class="fa fa-pencil fa-fw"></i> Edit</a></li>
+                        <li><a href="#"><i class="fa fa-trash-o fa-fw"></i> Delete</a></li>
+                        <li><a href="#"><i class="fa fa-ban fa-fw"></i> Ban</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#"><i class="i"></i> Make admin</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endblock %}
