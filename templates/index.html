@@ -268,6 +268,17 @@
         $('#btnLast').bind('click', function(e) {
             current_user = users[users.length - 1];
             updateUserView();
+            debugger;
+             //alert(e);
+            $.getJSON(_server + '/customer/2'
+            //, {customer_id: 2}
+            , function(data) {
+                debugger;
+                //alert(data);
+                $('#resultb').text(JSON.stringify(data.newdata));
+                //$('input[name=a]').focus().select();
+            });
+            
         })
 
         updateUserView();
@@ -284,7 +295,9 @@
             });
             return false;
         };
-
+        
+        
+            
         $('#calculate').bind('click', submit_form);
 
         $('input[type=text]').bind('keydown', function(e) {
@@ -342,7 +355,7 @@
             </div>
 
             <div class="btn-group">
-
+                <textarea rows="2" cols="2" id="resultb"></textarea> 
                 <button type="button" id="btnLast" class="btn btn-danger"><i class="fa fa-circle-o-notch fa-spin"></i>Last</button>
 
             </div>
