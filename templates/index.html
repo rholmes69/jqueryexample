@@ -1,12 +1,125 @@
 {% extends "layout.html" %} {% block body %}
+
+
+
+<!--<script type="text/javascript">
+
+        $(document).ready(function() {
+            $.getJSON("/Json/GetJson", null, function(data) {
+                $("#MyList").addItems(data);
+            });
+        });
+
+        $.fn.addItems = function(data) {
+            return this.each(function() {
+                var list = this;
+                $.each(data, function(index, itemData) {
+                    var option = new Option(itemData.Text, itemData.Value);
+                    list.add(option);
+                });
+            });
+        };
+
+        $("#MyList").change(function() {
+            alert('you selected ' + $(this).val());
+        });
+
+    </script>-->
+<script>
+    // just for the demos, avoids form submit
+    jQuery.validator.setDefaults({
+        debug: true,
+        success: "valid"
+    });
+    function submit_form_elements(eleform) {
+        $(eleform).validate({
+            rules: {
+                mobile_phone: {
+                    require_from_group: [1, ".phone-group"]
+                },
+                home_phone: {
+                    require_from_group: [1, ".phone-group"]
+                },
+                work_phone: {
+                    require_from_group: [1, ".phone-group"]
+                }
+            }
+        });
+    }
+</script>
+<style>
+    #field {
+        margin-left: .5em;
+        float: left;
+    }
+    
+    #field,
+    label {
+        float: left;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: small;
+    }
+    
+    br {
+        clear: both;
+    }
+    
+    input {
+        border: 1px solid black;
+        margin-bottom: .5em;
+    }
+    
+    input.error {
+        border: 1px solid red;
+    }
+    
+    label.error {
+        background: url('images/unchecked.gif') no-repeat;
+        padding-left: 16px;
+        margin-left: .3em;
+    }
+    
+    label.valid {
+        background: url('images/checked.gif') no-repeat;
+        display: block;
+        width: 16px;
+        height: 16px;
+    }
+</style>
+
 <script type="text/javascript">
     $(function() {
         var _server = 'http://localhost:5000';
+
+        var json = [ 
+            { 'red': '#f00' },
+            { 'green': '#0f0' },
+            { 'blue': '#00f' }
+        ];
+        
+        listColors = [];
+        
+        $.each(json, function () {
+            $.each(this, function (name, value) {
+                //console.log(name + '=' + value);
+                listColors.push( new Color(name, value) );
+            });
+        });
+        
+        function Color(name, value){
+            this.name = name;
+            this.hexCode = value;
+        }
+        
+        $.each(listColors, function(index, value) {
+            console.log("Index:" + index );
+            console.log(value);
+        })
         
         // var $SCRIPT_ROOT = {
-                
+
         //             request.script_root | tojson | safe
-                
+
         //     };
         // Fetch the name of the first pet from each owner
         var ownerArr = [{
@@ -25,6 +138,32 @@
             }]
         }];
 
+    var shows = [{
+            "artist": "Colin",
+            "deductions": [{
+                   "deduction": "dog1",
+                   "deductionType": "charity",
+                   "total": 10001
+                }, 
+                {
+                    "deduction": "dog2",
+                    "deductionType": "charity2",
+                    "total": 20001
+                }]
+          }, {
+            "artist": "Colin2",
+            "deductions": [{
+                   "deduction": "dog1",
+                   "deductionType": "charity",
+                   "total": 10002
+                }, 
+                {
+                    "deduction": "dog2",
+                    "deductionType": "charity2",
+                    "total": 20005
+                }]
+          }];
+        
         // Array's map method.
         ownerArr.map(function(owner) {
             return owner.pets[0].name;
@@ -34,6 +173,8 @@
         var petName = _.map(ownerArr, 'pets[0].name');
         console.log(petName);
 
+        var artists = _.map(shows, 'deductions[0].total')
+        console.log(artists);
         // Create an array of length 6 and populate them with unique values. The value must be prefix with "ball_".
         // eg. [ball_0, ball_1, ball_2, ball_3, ball_4, ball_5]
 
@@ -133,7 +274,7 @@
 
         var submit_form = function(e) {
             //alert(e);
-            $.getJSON(_server +'/_add_numbers', {
+            $.getJSON(_server + '/_add_numbers', {
                 a: $('input[name="a"]').val(),
                 b: $('input[name="b"]').val()
             }, function(data) {
@@ -153,13 +294,35 @@
         });
 
         $('input[name=a]').focus();
+
+
+
     });
+
+    function clear_form_elements(ele) {
+        debugger;
+        $(ele).find(':input').each(function() {
+            switch (this.type) {
+                case 'password':
+                case 'select-multiple':
+                case 'select-one':
+                case 'text':
+                case 'textarea':
+                    $(this).val('');
+                    break;
+                case 'checkbox':
+                case 'radio':
+                    this.checked = false;
+            }
+        });
+
+    }
 </script>
 <div class="row">
     <h1>jQuery Example</h1>
 
     <p>
-
+        <!--<select id="MyList" />-->
         <div class="btn-toolbar" id="btnToolBar">
             <div class="btn-group">
 
@@ -200,7 +363,7 @@
                     <label class="sr-only" for="">Age</label>
                     <input type="text" class="form-control" size="5" name="user_age" id="user_age">
                     <label class="sr-only" for="">Premium</label>
-                    <input type="checkbox"  id="user_premium">
+                    <input type="checkbox" id="user_premium">
                     <div class="form-group">
                         <label for="input" class="col-sm-2 control-label">:</label>
                         <div class="col-sm-10">
@@ -227,7 +390,36 @@
 <i class="fa fa-refresh fa-spin"></i>
 <i class="fa fa-cog fa-spin"></i>
 <i class="fa fa-spinner fa-pulse"></i>
+<div>
+    <div class="btn-toolbar" id="btnToolBar2">
+        <div class="btn-group">
 
+            <button type="button" id="btnAdd" class="btn btn-info"><i class="fa fa-circle-o-notch"></i>+</button>
+            <button type="button" id="btn1" class="btn btn-info"><i class="fa fa-circle-o-notch"></i>+</button>
+            <button type="button" id="btn2" class="btn btn-info"><i class="fa fa-circle-o-notch"></i>+</button>
+            <button type="button" id="btn3" class="btn btn-info"><i class="fa fa-circle-o-notch"></i>+</button>
+
+        </div>
+        <div class="btn-group">
+
+            <button type="button" id="btnSubtract" class="btn btn-info"><i class="fa fa-ban fa-fw"></i>-</button>
+
+        </div>
+
+        <div class="btn-group">
+
+            <button type="button" id="btnMultiply" class="btn btn-warning"><i class="fa fa-ban fa-fw"></i>*</button>
+
+        </div>
+
+        <div class="btn-group">
+
+            <button type="button" id="btnDivide" class="btn btn-danger"><i class="fa fa-circle-o-notch fa-spin"></i>/</button>
+
+        </div>
+
+    </div>
+</div>
 <p>
     <input type="text" size="5" name="a"> +
     <input type="text" size="5" name="b"> =
@@ -289,5 +481,58 @@
             </div>
 
         </div>
+        <form id="clearform">
+            <fieldset id="example_1">
+                <legend>Section 1</legend> <input type="text" value="this is the default text" style="width: 200px;" /><br />
+                <input type="password" value="password" style="width: 200px;" /><br />
+                <textarea rows="3" cols="20" style="width: 200px;">this is the default textarea</textarea><br />
+            </fieldset>
+            <fieldset id="example_2">
+                <legend>Section 2</legend> <input type="radio" checked="checked" name="example_radio" /><input type="radio" name="example_radio" /><input type="radio" name="example_radio" /><br />
+                <input type="checkbox" checked="checked" /><input type="checkbox" /><input type="checkbox" /><input type="checkbox" /><br />
+            </fieldset>
+            <fieldset id="example_3">
+                <legend>Section 3</legend> <select>
+            <option> 	</option>
+            <option>apples</option>
+            <option selected="selected">bananas</option>
+            <option>pears</option>
+            </select><br />
+                <select multiple="true">
+            <option selected="selected">apples</option>
+            <option>bananas</option>
+            <option selected="selected">pears</option>
+            </select><br />
+            </fieldset>
+            <input class="btn btn-danger" type="reset" value="Reset" />
+            <input class="btn btn-danger" type="button" value="Clear All" onclick="clear_form_elements('#clearform')" />
+            <input class="btn btn-danger" type="button" value="Clear Section 1" onclick="clear_form_elements('#example_1')" />
+            <input class="btn btn-danger" type="button" value="Clear Section 2" onclick="clear_form_elements('#example_2')" />
+            <input class="btn btn-danger" type="button" value="Clear Section 3" onclick="clear_form_elements('#example_3')" />
+        </form>
 
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Panel title</h3>
+            </div>
+            <div class="panel-body">
+                <form id="myform_validate">
+                    <label for="mobile_phone">Mobile phone: </label>
+                    <input class="left phone-group" id="mobile_phone" name="mobile_phone">
+                    <br/>
+                    <label for="home_phone">Home phone: </label>
+                    <input class="left phone-group" id="home_phone" name="home_phone">
+                    <br/>
+                    <label for="work_phone">Work phone: </label>
+                    <input class="left phone-group" id="work_phone" name="work_phone">
+                    <br/>
+                    <input class="btn btn-success" type="button" value="Validate!" onclick="submit_form_elements('#myform_validate')">
+                </form>
+
+            </div>
+        </div>
+
+        <hr>
+        
+        
         {% endblock %}

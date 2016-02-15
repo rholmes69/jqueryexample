@@ -19,12 +19,25 @@ def add_numbers():
     b = request.args.get('b', 0, type=int)
     return jsonify(result=a + b)
 
+@app.route('/_subtract_numbers')
+def add_numbers():
+    """Subtract two numbers server side, ridiculous but well..."""
+    a = request.args.get('a', 0, type=int)
+    b = request.args.get('b', 0, type=int)
+    return jsonify(result=a - b)
 
+@app.route('/_multiply_numbers')
+def add_numbers():
+    """Subtract two numbers server side, ridiculous but well..."""
+    a = request.args.get('a', 0, type=int)
+    b = request.args.get('b', 0, type=int)
+    return jsonify(result=a * b)
+    
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/home')
+@app.route('/index2')
 def index2():
     return render_template('index2.html')
     
