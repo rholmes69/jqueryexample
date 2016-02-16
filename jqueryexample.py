@@ -54,7 +54,7 @@ def get_song(song_id):
     
     # Note that the insert method can take either an array or a single dict.
 
-    songs.insert(SEED_DATA)
+    #songs.insert(SEED_DATA)
     # Finally we run a query which returns all the hits that spent 10 or
     # more weeks at number 1.
 

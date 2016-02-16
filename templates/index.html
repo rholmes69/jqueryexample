@@ -89,26 +89,79 @@
 
 <script type="text/javascript">
     $(function() {
-        var _server = 'http://localhost:5000';
-
-       var _thePage = {
-           event  : 0,
-           header : {},
-           tickets : []
-           
+        
+       var _server = 'http://localhost:5000';
+       
+       var getPage = function() {
+            
+            // this._retval = '';
+            
+            // $.getJSON(_server + '/song/1',
+            // function(data) {
+            //     //debugger;
+            //     this._retval = data.request.songlist[0];
+            // });
+            
+            $.getJSON( _server + '/song/1', function( data ) {
+                var items = [];
+                $.each( data.request.songlist, function( key, val ) {
+                    items.push( "<li id='" + key + "'>" + val + "</li>" );
+                });
+                
+                $( "<ul/>", {
+                    "class": "my-new-list",
+                    html: items.join( "" )
+                }).appendTo( "body" );
+            });
+           // return _retval;
+        }
+        
+       function Ticket (name, price){
+           this.name = name;
+           this.price= price;
        };
        
+       var _thePage = {
+           eventId   : 0,
+           header    : {},
+           tickets   : [],
+           addTicket : function(name, price){
+               this.tickets.push(new Ticket (name,price))
+           },
+           getTicket : function(){
+               return this.tickets;
+           },
+           initPage  : function(){
+               this.header.name = "Roderick";
+               this.eventId = 10;
+               getPage();
+            //    $('#txtemail').val(getPage()._retval);
+           }
+       };
+       
+       var _thePageDefaults = {};
+       
+       _thePage.initPage();
+       
+       $('#txtemail').val(_thePage.header.name);
+       
        var obj = {
-        val: 10,
-        add: function(n) {
-            return this.val + n;
-        }
+            val: 10,
+            add: function(n) {
+                return this.val + n;
+            },
+            substract: function(n) {
+                return this.val - n;
+            }
         };
         
         console.log(obj);
         
-       var a =  _.map([1, 2, 3], obj.add, obj);
+       var a =  _.map([1, 2, 3], _.bind(obj.add, obj));
       
+       console.log( _.map([1, 2, 3], _.bind(obj.substract, obj)));
+      
+       
         // -> [11, 12, 13]
        console.log(a);
        
@@ -137,6 +190,35 @@
             console.log("Index:" + index );
             console.log(value);
         })
+        
+        var fruits = {
+            apple: {
+                name: 'Apple',
+                price: 2.99
+            },
+            orange: {
+                name: 'Orange',
+                price: 1.99
+            },
+            banana: {
+                name: 'Banana',
+                price: 0.5
+            }
+        };
+
+        _.pick(fruits, function(fruit) {
+            return fruit.price > 2;
+        });
+        // -> { apple: { name: 'Apple', price: 2.99 } }
+
+        _.pick(fruits, function(fruit, key) {
+            return key != 'apple';
+        });
+        // -> { orange: { name: 'Orange', price: 1.99 }, banana: { name: 'Banana', price\: 0.5 } }
+
+        _.pick(fruits, 'apple');
+        // -> { apple: { name: 'Apple', price: 2.99 } }
+        
         
         // var $SCRIPT_ROOT = {
 
@@ -318,7 +400,7 @@
             return false;
         };
         
-        
+       
             
         $('#calculate').bind('click', submit_form);
 
@@ -392,7 +474,7 @@
                 <form action="" method="POST" class="form-inline" role="form">
 
                     <label class="sr-only" for="">Email</label>
-                    <input type="email" class="form-control" id="" placeholder="Input field">
+                    <input type="email" class="form-control" id="txtemail" placeholder="Input field">
                     <label class="sr-only" for="">Name</label>
                     <input type="text" class="form-control" size="5" name="user_name" id="user_name">
                     <label class="sr-only" for="">Age</label>
