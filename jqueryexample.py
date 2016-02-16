@@ -11,13 +11,85 @@
 from flask import Flask, jsonify, render_template, request, url_for
 import os
 
+import sys
+import pymongo
+import json
+from bson import json_util
+
 app = Flask(__name__)
+
+
+### Create seed data
+
+SEED_DATA = [
+    {
+        'decade': '1970s',
+        'artist': 'Debby Boone',
+        'song': 'You Light Up My Life',
+        'weeksAtOne': 10
+    },
+    {
+        'decade': '1980s',
+        'artist': 'Olivia Newton-John',
+        'song': 'Physical',
+        'weeksAtOne': 10
+    },
+    {
+        'decade': '1990s',
+        'artist': 'Mariah Carey',
+        'song': 'One Sweet Day',
+        'weeksAtOne': 16
+    }
+]
+
+@app.route('/song/<int:song_id>')
+def get_song(song_id):
+    response = {}
+    songs = []
+    model = {}
+    
+    client = pymongo.MongoClient()
+    db = client['db']
+    songs = db['songs']
+    
+    # Note that the insert method can take either an array or a single dict.
+
+    songs.insert(SEED_DATA)
+    # Finally we run a query which returns all the hits that spent 10 or
+    # more weeks at number 1.
+
+    cursor = songs.find({'weeksAtOne': {'$gte': 10}}).sort('decade', 1)
+
+    # for doc in cursor:
+    #     songs.append ( doc['song'])
+ 
+    
+    json_docs = []
+    for doc in cursor:
+        json_doc = json.dumps(doc['song'], default=json_util.default)
+        json_docs.append(json_doc)
+        
+   # client.close()
+    try:
+       
+        model['songlist'] = json_docs
+      
+        response['request'] = model
+        client.close()
+        return jsonify(response)
+    except os.error as err:
+        sys.stderr.write("Can't list %s: %s\n" % (dir, err))
+        #self.addstats("<dir>", "unlistable", 1)
+        response['error'] = "Can't list %s: %s\n" % (dir, err)
+        return jsonify(response)
+
 
 @app.route('/customer/<int:customer_id>')
 def show_customer2(customer_id):
     response = {}
     model = {}
     dir = os.getcwd()
+   
     try:
         names = os.listdir(dir)
         # print (names)

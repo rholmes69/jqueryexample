@@ -91,6 +91,28 @@
     $(function() {
         var _server = 'http://localhost:5000';
 
+       var _thePage = {
+           event  : 0,
+           header : {},
+           tickets : []
+           
+       };
+       
+       var obj = {
+        val: 10,
+        add: function(n) {
+            return this.val + n;
+        }
+        };
+        
+        console.log(obj);
+        
+       var a =  _.map([1, 2, 3], obj.add, obj);
+      
+        // -> [11, 12, 13]
+       console.log(a);
+       
+       
         var json = [ 
             { 'red': '#f00' },
             { 'green': '#0f0' },
