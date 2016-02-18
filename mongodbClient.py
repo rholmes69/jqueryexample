@@ -45,14 +45,14 @@ MONGODB_URI = 'mongodb://user:pass@host:port/db'
 
 def main(args):
 
-    client = pymongo.MongoClient(MONGODB_URI)
-
-    db = client.get_default_database()
+    client = pymongo.MongoClient()
+    db = client['db']
+    songs = db['songs']
     
     # First we'll add a few songs. Nothing is required to create the songs 
     # collection; it is created automatically when we insert.
 
-    songs = db['songs']
+    # songs = db['songs']
 
     # Note that the insert method can take either an array or a single dict.
 

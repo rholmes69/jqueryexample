@@ -9,16 +9,51 @@
     :license: BSD, see LICENSE for more details.
 """
 from flask import Flask, jsonify, render_template, request, url_for
+import pyodbc, unittest
+
 import os
 
 import sys
 import pymongo
 import json
+import collections
+
 from bson import json_util
 
 app = Flask(__name__)
 
+def get_db_connection():
+    """Renders the home page, with a list of all polls."""
+    cnx_str = 'DRIVER={SQL Server};SERVER=ustorwromeiq1;PORT=1433;DATABASE=dbrome;UID=romeuser;PWD=romeuser;TDS_Version=7.3;'
+    conn = pyodbc.connect(cnx_str, autocommit=True)
+    #cursor = conn.cursor()
+    return conn
 
+def get_rome_bpc_extract(dealId):
+      rows = []
+      try:
+          conn = get_db_connection()
+          cursor = conn.cursor()
+          #print('Inserted 500 rows, IDENTITY VALUE: %s' % (row[0],))
+          sql = 'exec romeuser.spS_SMT_OUTLOOKSOFT_EXTRACT_DEAL_EVENTS %s,-1, 1, -1,-1,NULL,NULL, 1,1,-1' % (dealId)
+#          x = 'apple'
+#y = 'lemon'
+#z = "The items in the basket are %s and %s" % (x,y)
+
+          cursor.execute(sql)
+        #   for row in cursor:
+        #     print row
+
+          cursor.nextset()
+
+          for row in cursor:
+              rows.append(row)
+            #   print row
+          
+          return rows
+      except(e):
+          print e
+          raise e
 ### Create seed data
 
 SEED_DATA = [
@@ -42,6 +77,72 @@ SEED_DATA = [
     }
 ]
 
+@app.route('/romebpcetl/<int:deal_id>')
+def get_rome_bpc_extract2(deal_id):
+    response = {}
+    model = {}
+  
+   
+    try:
+        extract_data = get_rome_bpc_extract(deal_id)
+        #print (extract_data)
+        
+        # Convert query to row arrays
+ 
+        # rowarray_list = []
+        # for row in extract_data:
+        #     t = (row[0],row[1])
+        #     rowarray_list.append(t)
+        
+        # j = json.dumps(rowarray_list)
+        # rowarrays_file = 'student_rowarrays.js'
+        # f = open(rowarrays_file,'w')
+        # print >> f, j
+        
+        # Convert query to objects of key-value pairs
+        # OracleID	ROMEID	Company	Department	EventDate	(No column name)	Talent	Venue	Data_Type	Account	Value	Deal_Status	DATASRC	RptCurrency	TYPEOFEVENT
+        # NULL	270270	C3161	D00038	2016.JAN16	STestagain	T14008	V03590	FCST	A40223.00	68014.00	Confirmed	ROME	LC	Rental O/O
+        objects_list = []
+        for row in extract_data:
+            d = collections.OrderedDict()
+            d['OracleID'] = row[0]
+            d['ROMEID'] = row[1]
+            d['Company'] = row[2]
+            d['Department'] = row[3]
+            d['EventDate'] = row[4]
+            d['Talent'] = row[5]
+            d['Data_Type'] = row[6]
+            d['Account	Value'] = row[7]
+            d['Deal_Status'] = row[8]
+            objects_list.append(d)
+        
+        print (objects_list)
+        print (len(objects_list))
+        j = json.dumps(objects_list)
+        objects_file = 'student_objects.js'
+        f = open(objects_file,'w')
+        print >> f, j
+        
+        
+        # json_docs = []
+        # for doc in extract_data:
+        #     print (doc[5])
+            #print (json.dumps(doc , default=json_util.default)
+            # print(json_doc)
+            # json_docs.append(json_doc)
+        
+        model['data'] = objects_list
+        response['request'] = model
+        
+        return jsonify(response)
+    except os.error as err:
+        sys.stderr.write("Can't list %s: %s\n" % (json_docs, err))
+        #self.addstats("<dir>", "unlistable", 1)
+        response['error'] = "Can't list %s: %s\n" % (json_docs, err)
+        return jsonify(response)
+
+ 
+ 
 @app.route('/song/<int:song_id>')
 def get_song(song_id):
     response = {}
@@ -54,7 +155,7 @@ def get_song(song_id):
     
     # Note that the insert method can take either an array or a single dict.
 
-    #songs.insert(SEED_DATA)
+    songs.insert(SEED_DATA)
     # Finally we run a query which returns all the hits that spent 10 or
     # more weeks at number 1.
 
