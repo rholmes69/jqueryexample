@@ -91,6 +91,57 @@
     $(function() {
         
        var _server = 'http://localhost:5000';
+      
+       function get_Api_Data (url_resouce_name, resource_id) {
+           
+            debugger;
+            var resource_url = _server + '/' + url_resouce_name + '/' + resource_id;
+             
+            $.getJSON( _server + '/song/1' , function( data ) {
+                  debugger;
+                $.each( data.request.songlist, function( key, val ) {
+                    items.push( "<li id='" + key + "'>" + val + "</li>" );
+                });
+                
+                $( "<ul/>", {
+                    "class": "my-new-list",
+                    html: items.join( "" )
+                }).appendTo( 'showresults' );
+            });
+          
+       }
+       
+       
+       function get_Api_Data2 () {
+           
+            debugger;
+            var resource_url = _server + '/romebpcetl/270270';
+            var items = [];
+            $.getJSON( resource_url , function( data ) {
+                  debugger;
+                  lists = [];
+                $.each( data.request.data, function( key, val ) {
+                    lists.push(val);
+                    console.log(lists);
+                    items.push( "<li id='" + key + "'>" + val.Company + "</li>" );
+                });
+                
+                $( "<ul/>", {
+                    "class": "my-new-list",
+                    html: items.join( "" )
+                }).appendTo( 'body' );
+                
+                $('#showresults').append($( "<ul/>", {
+                    "class": "my-new-list",
+                    html: items.join( "" )
+                }))
+                
+            });
+          
+       }
+       
+       get_Api_Data('song',1);
+       get_Api_Data2();
        
        var getPage = function() {
             
@@ -111,8 +162,9 @@
                 $( "<ul/>", {
                     "class": "my-new-list",
                     html: items.join( "" )
-                }).appendTo( "body" );
-            });
+                }).appendTo( $('#showresults') );
+            })
+            
            // return _retval;
         }
         
@@ -134,12 +186,13 @@
            initPage  : function(){
                this.header.name = "Roderick";
                this.eventId = 10;
-               getPage();
+               //get_Api_Data('song',1);
+              getPage();
             //    $('#txtemail').val(getPage()._retval);
            }
        };
        
-       var _thePageDefaults = {};
+      
        
        _thePage.initPage();
        
@@ -242,6 +295,9 @@
             }]
         }];
 
+        
+    $("#divUserInformation").slideUp(6000).slideDown(12000);
+    
     var shows = [{
             "artist": "Colin",
             "deductions": [{
@@ -465,7 +521,7 @@
             </div>
 
         </div>
-        <div class="panel panel-default">
+        <div class="panel panel-default" id="divUserInformation">
             <div class="panel-heading">
                 <h3 class="panel-title">User Information</h3>
             </div>

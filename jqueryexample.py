@@ -36,9 +36,9 @@ def get_rome_bpc_extract(dealId):
           cursor = conn.cursor()
           #print('Inserted 500 rows, IDENTITY VALUE: %s' % (row[0],))
           sql = 'exec romeuser.spS_SMT_OUTLOOKSOFT_EXTRACT_DEAL_EVENTS %s,-1, 1, -1,-1,NULL,NULL, 1,1,-1' % (dealId)
-#          x = 'apple'
-#y = 'lemon'
-#z = "The items in the basket are %s and %s" % (x,y)
+            #          x = 'apple'
+            #y = 'lemon'
+            #z = "The items in the basket are %s and %s" % (x,y)
 
           cursor.execute(sql)
         #   for row in cursor:
@@ -114,6 +114,9 @@ def get_rome_bpc_extract2(deal_id):
             d['Data_Type'] = row[6]
             d['Account	Value'] = row[7]
             d['Deal_Status'] = row[8]
+            # d['DATASRC'] = row[9]
+            # d['RptCurrency'] = row[10]
+            # d['TYPEOFEVENT'] = row[11]
             objects_list.append(d)
         
         print (objects_list)
@@ -155,7 +158,7 @@ def get_song(song_id):
     
     # Note that the insert method can take either an array or a single dict.
 
-    songs.insert(SEED_DATA)
+    #songs.insert(SEED_DATA)
     # Finally we run a query which returns all the hits that spent 10 or
     # more weeks at number 1.
 

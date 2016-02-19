@@ -24,6 +24,98 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.3.0/lodash.js" crossorigin="anonymous"></script>
 
+<style>
+        
+    #list-container {
+        max-height:200px;
+        overflow:auto;
+        margin-bottom:20px;
+    }
+    
+    .strike {
+        text-decoration: line-through;
+    }
+
+
+.modal {
+
+}
+
+.modal-header {
+    font-family:   'Lato', sans-serif;
+    font-weight:   400;
+    border-radius: 0 0 0 0;
+    background:    #AA2700;
+    border:        1px solid #AA2700;
+}
+
+.modal-header h3 {
+    text-shadow: 0 2px 2px rgba(0, 0, 0, .8);
+    color:       white;
+    font-size:   18pt;
+}
+
+.alert-area {
+    margin: 20px;
+}
+
+.alert-area .alert {
+    padding: 8px 14px;
+}
+
+.modal-body {
+    padding-top:  0;
+    max-height: 300px;
+    overflow-y:   auto;
+    margin-right: 4px;
+}
+
+.modal-body .alert-error p {
+    margin-top: 2px;
+}
+
+.modal-body-form {
+    display:    block;
+    text-align: left;
+    margin:     0 8px;
+}
+
+.modal-body-form label {
+    font-family:   "Open Sans", "Helvetica Neue Light", 'Arial', sans-serif;
+    font-weight:   bold;
+    text-align:    left;
+    margin-bottom: 2px;
+    font-size:     12pt;
+}
+
+.modal-body-form .input-xlarge {
+    width: 96%;
+}
+
+.modal-footer {
+    border-radius: 0 0 0 0;
+}
+
+#loading {
+    width:            50px;
+    height:           50px;
+    background-color: #E78F1E;
+    position:         absolute;
+    left:             50%;
+    top:              25%;
+    z-index:          999999;
+    border:           1px solid #c1680e;
+    border-radius:    6px;
+    box-shadow:       0 0 12px rgba(0, 0, 0, .6);
+    padding:          8px;
+    margin:           -33px auto 0 -33px;
+}
+
+#loading .icon-spinner {
+    color: #fff;
+}
+
+</style>
 <script>
     var countUpTimer;
     var countUp_number = -10;
@@ -75,6 +167,95 @@
         promise.progress(inProgress);
 
         countUp();
+        
+        var _server = "http://localhost:5000";
+        
+        function get_Api_Data2 () {
+           //    # OracleID	ROMEID	Company	Department	EventDate	(No column name)	Talent	Venue	Data_Type	Account	Value	Deal_Status	DATASRC	RptCurrency	TYPEOFEVENT
+    
+            debugger;
+            var resource_url = _server + '/romebpcetl/270270';
+            var items = [];
+            $.getJSON( resource_url , function( data ) {
+                  debugger;
+                  lists = [];
+               
+                    $.each( data.request.data, function( key, val ) {
+                        lists.push(val);
+                        console.log(lists);
+                        items.push( "<tr id='" + key + "'>"
+                        +"<td>" + val.ROMEID + "</td>"
+                        +"<td>" + val.Company + "</td>"
+                        +"<td>" + val.Department + "</td>"
+                        +"<td>" + val.EventDate + "</td>"
+                        +"<td>" + val.Talent + "</td>"
+                        +"<td>" + val.Talent + "</td>"
+                        +"</tr>" );
+                    });
+                    
+                    var html = '';
+                    if (data.request.data) {
+                        data.request.data.forEach(function (entry) {
+                            var id = entry.ROMEID;
+                            var company_name = entry.Company;
+                            var department_number = entry.Department;
+                            var event_date = entry.EventDate;
+                            var talent = entry.Talent;
+                            
+                            //html += '<tr><th></th><th>ROMEID</th><th>Company</th><th>Department</th><th>Event Date</th><th>Talent</th></tr>'
+                            html += '<tr>';
+                          
+                            html += '<td><a><i class="fa fa-cogs fa-fw" data-id="' + id + '"></i></td><td>'+ id  +'</a></td>';
+                            
+                            if (entry.ROMEID === true) {
+                                html += '<td style="width:100%" class="item strike" data-id="' + id + '">' + company_name + '</td>';
+                            } else {
+                                html += '<td style="width:100%" class="item" data-id="' + id + '">' + company_name + '</td>';
+                            }
+                            
+                            if (entry.ROMEID === true) {
+                                html += '<td style="width:100%" class="item strike" data-id="' + id + '">' + department_number + '</td>';
+                            } else {
+                                html += '<td style="width:100%" class="item" data-id="' + id + '">' + department_number + '</td>';
+                            }
+                          
+                            if (entry.ROMEID === true) {
+                                html += '<td style="width:100%" class="item strike" data-id="' + id + '">' + event_date + '</td>';
+                            } else {
+                                html += '<td style="width:100%" class="item" data-id="' + id + '">' + event_date + '</td>';
+                            }
+                             if (entry.ROMEID === true) {
+                                html += '<td style="width:100%" class="item strike" data-id="' + id + '">' + talent + '</td>';
+                            } else {
+                                html += '<td style="width:100%" class="item" data-id="' + id + '">' + talent + '</td>';
+                            }
+                          
+                            html += '</tr>';
+                        });
+                    }
+                    $('#tbody1').append(html);
+                    $('#list-container .item').click(function (e) {
+                        var id = $(this).data('id');
+                        var complete = $(this).hasClass('strike');
+                        //updateRecord(id, !complete);
+                    });
+                    $('#list-container i').click(function (e) {
+                        var id = $(this).data('id');
+                        //deleteRecord(id);
+                    });
+                    
+                    $( "<ul/>", {
+                        "class": "my-new-list",
+                        html: items //.join( "" )
+                    }).appendTo( $('#tbl1 tbody') );
+                
+               
+                
+            });
+          
+       }
+       
+       get_Api_Data2();
     });
 </script>
 <!--
@@ -127,7 +308,37 @@
         </div>
         <!--/.container-fluid -->
     </nav>
-    <li><a href="/index2">index2</a>
+    <a href="/index2">index2</a>
+    
+    <h4>My Todo List</h4>
+    <div id="list-container">
+        <table id="table1" class="table table-hover table-striped table-bordered todolist">
+            <tr><th></th><th>ROMEID</th><th>Company</th><th>Department</th><th>Event Date</th><th>Talent</th></tr>
+            <tbody id="tbody1">
+            </tbody>
+        </table>
+    </div>
+    
+    More data:<span id="resultb"/>
+    song list: 
+   
+    <table class="table table-striped table-hover" id="tbl1">
+    <thead>
+        <tr>
+            
+            <th>Column heading</th>
+            <th>Column heading</th>
+            <th>Column heading</th>
+            <th>Column heading</th>
+            <th>Column heading</th>
+            <th>Column heading</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+    </tbody>
+    </table> 
+              
         <div id="progressbar" style="margin: 0px 0px 16px 0px;"><span style="position: absolute;text-align: center;margin: 5px 0 0 45%;"></span>
 
         </div>
@@ -169,7 +380,7 @@
                                         <form id="tabArtists" action="" method="POST" class="form-inline" role="form">
 
                                             <div class="table-responsive">
-                                                <table class="table table-hover">
+                                                <table id="modaltable" class="table table-hover">
                                                     <thead>
                                                         <tr>
                                                             <th>artist</th>
@@ -215,7 +426,7 @@
                                         <form id="tabCopromoter" action="" method="POST" class="form-inline" role="form">
 
                                             <div class="table-responsive">
-                                                <table class="table table-hover">
+                                                <table id="modaltable2" class="table table-hover">
                                                     <thead>
                                                         <tr>
                                                             <th>copromoter</th>
