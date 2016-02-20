@@ -77,6 +77,22 @@ SEED_DATA = [
     }
 ]
 
+###############################################################################
+# pseudocode:
+        
+    #create a new routine for extracting the tbd forecast budget events data into a filelist
+    #add header record
+    #dynamically name the file with the appropriate mont year format
+    #copy the file to specific location designated in the config file 
+    #send email to the appropriate team members
+
+    # sql          : exec romeuser.spS_SMT_OUTLOOKSOFT_EXTRACT_DEAL_EVENTS_TDB -1,-1, 7, -1,-1,'1/1/2016','12/31/2016', 1, 5,-1  --HOB ROME MUSIC TDB FORECAST 
+    # header record: OracleID,ROMEID,Company,Department,EventDate,Promoter,Talent,Venue,Data_Type,Account,Value,Deal_Status,DATASRC,RPTCURRENCY,TYPEOFEVENT
+
+
+###############################################################################
+
+
 @app.route('/romebpcetl/<int:deal_id>')
 def get_rome_bpc_extract2(deal_id):
     response = {}

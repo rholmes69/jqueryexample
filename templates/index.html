@@ -96,8 +96,8 @@
            
             debugger;
             var resource_url = _server + '/' + url_resouce_name + '/' + resource_id;
-             
-            $.getJSON( _server + '/song/1' , function( data ) {
+             var items = [];
+            $.getJSON(resource_url, function( data ) {
                   debugger;
                 $.each( data.request.songlist, function( key, val ) {
                     items.push( "<li id='" + key + "'>" + val + "</li>" );
