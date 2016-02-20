@@ -123,6 +123,28 @@
     var promise = deferred.promise();
 
     $(document).ready(function() {
+        
+        
+        $("#btnRemoteModalLogin").click(function() {
+        //called when user clicks login
+        //function login() {
+            debugger;
+            $("#main-username").val($("#modal-username").val());
+            $("#main-result").val($("#modal-result").val());
+            console.log('username : '+$("#main-username").val());
+            console.log('result : '+$("#main-result").val());
+            $("#myModal2").modal("hide");
+        //}
+        });
+        
+        
+        //called when the modal is closed, logs values grabbed from the modal in login()
+        $('#myModal2').on('hidden', function() {
+            console.log('username : '+$("#main-username").val());
+            console.log('result : '+$("#main-result").val());
+        })
+
+        
         $("#progressbar").progressbar();
         $("#progressbar").css({
             'background': 'LightYellow'
@@ -172,7 +194,7 @@
         
         function get_Api_Data2 () {
            //    # OracleID	ROMEID	Company	Department	EventDate	(No column name)	Talent	Venue	Data_Type	Account	Value	Deal_Status	DATASRC	RptCurrency	TYPEOFEVENT
-    
+            $("#loading").show();
             debugger;
             var resource_url = _server + '/romebpcetl/270270';
             var items = [];
@@ -197,7 +219,7 @@
                     if (data.request.data) {
                         data.request.data.forEach(function (entry) {
                             var id = entry.ROMEID;
-                            var company_name = entry.Company;
+                            var company_name = entry.Company.trim();
                             var department_number = entry.Department;
                             var event_date = entry.EventDate;
                             var talent = entry.Talent;
@@ -249,13 +271,45 @@
                         html: items //.join( "" )
                     }).appendTo( $('#tbl1 tbody') );
                 
-               
+                  // $("#loading").hide();
                 
             });
           
        }
        
        get_Api_Data2();
+       
+       $.dialog = {
+                confirm: function(options) {
+                    var $modal = $('#confirmAlert');
+                    $modal.find('.modal-body').text(options.message);
+                    
+                    $modal.off('click.dialog', '.btn, .close')
+                        .off('hidden')
+                        .on('click.dialog', '.btn, .close', function() {
+                        $(this).addClass('modal-result');
+                    }).on('hidden', function() {
+                        var result = $(this).find('.modal-result').filter('.btn-danger').length > 0;
+                        $(this).find('.modal-result').removeClass('modal-result');
+                        
+                        options.callback(result);
+                    });
+                    
+                    //$modal.modal();
+                }        
+            };
+            
+            $('#demo').click(function() {
+                $.dialog.confirm({message: 'Click YES to confirm.', callback: function(result) {
+                    alert('Result: ' + result);
+                }
+            });
+        });
+       
+    //    $("#loginDialog").modal('show').on('shown', function() {
+    //         $('#UserEmail').focus();
+    //     });
+        
     });
 </script>
 <!--
@@ -267,6 +321,8 @@
         }
     };
 </script>-->
+<body>
+    
 <div class="container">
     <!-- Static navbar -->
     <nav class="navbar navbar-default">
@@ -308,6 +364,8 @@
         </div>
         <!--/.container-fluid -->
     </nav>
+    
+    <div id="loading" class="hide"><i class="icon-spinner icon-spin icon-4x"></i></div>
     <a href="/index2">index2</a>
     
     <h4>My Todo List</h4>
@@ -339,6 +397,40 @@
     </tbody>
     </table> 
               
+              
+              
+        <!-- button to trigger modal -->
+        <button id="btnRemoteModal"  class="btn btn-info" data-target="#myModal2" data-toggle="modal">Remote Modal</button>
+        
+        <!-- hidden fields to store modal result in -->
+        <input type="hidden" id="main-username">
+        <input type="hidden" id="main-result">
+        
+        <!-- modal -->
+        <div id="myModal2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="dialog">
+                                    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabel">Modal test</h3>
+        </div>
+        <div class="modal-body">
+            <label class="sr-only" for="">User Name:</label>
+            <input type="input" class="form-control" id="modal-username" placeholder="User Name">
+            <label class="sr-only" for="">Password:</label>
+            <input type="email" class="form-control" id="modal-result" placeholder="Password">
+            <!--<input type="hidden" id="main-username">
+            <input type="hidden" id="main-result">-->
+        </div>
+        <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+            <button id="btnRemoteModalLogin" class="btn btn-primary" >Login</button>
+        </div>
+        </div>​
+            </div>
+        </div>
+        
+        
         <div id="progressbar" style="margin: 0px 0px 16px 0px;"><span style="position: absolute;text-align: center;margin: 5px 0 0 45%;"></span>
 
         </div>
@@ -346,12 +438,32 @@
             <input id="fail" type="button" value=" Fail Now " />
         </center>
         <div class="row">
+        
+        <div class="modal fade" id="confirmAlert">
+            <div class="modal-dialog" role="dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">x</button>
+                                    <h3 id="confirmTitle">Are you sure?</h3>
+                                </div>
+                            
+                                <div class="modal-body">
+                                    <p id="confirmMessage">Body</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="#" class="btn" data-dismiss="modal">Cancel</a>
+                                    <a href="#" class="btn btn-danger" data-dismiss="modal">Yes</a>
+                                </div>
+                        </div>
+            </div>
+        </div>
 
+<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#confirmAlert" id="confirmAlert" >Confirm</button>
 
             <!-- Button trigger modal -->
             <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
-  Launch demo modal
-</button>
+            Launch demo modal
+            </button>
 
             <!-- Modal -->
             <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -480,6 +592,33 @@
                     </div>
                 </div>
             </div>
+            
+            <div id="loginDialog" class="modal fade hide">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+                        onclick="clearLogIn()">&times;</button>
+                <h3>Sign In</h3>
+            </div>
+            <div class="alert-area">
+                <div class="alert alert-block" id="loginErrorMessage"></div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-body-form">
+                    <input placeholder="Email Address" type="email" class="input-xlarge" name="UserEmail"
+                           id="UserEmail" />
+                    <input placeholder="Password" type="password" class="input-xlarge" name="Password" id="Password"
+                           value="" />
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" onclick="logIn()">Sign In</button>
+        </div>
+    </div>
+</div>
+            
             <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
 
 
@@ -554,3 +693,4 @@
         </script>
         {% block body %} {% endblock %}
 </div>
+</body>
