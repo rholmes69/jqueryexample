@@ -2,12 +2,18 @@
 
 
 
-<!--<script type="text/javascript">
-
+<script type="text/javascript">
+        var data = [];
+        data.push({Value:'1',Text:'USA'});
+        data.push({Value:'2',Text:'Russia'});
+        //data.push({2,"Russia"});
+        
         $(document).ready(function() {
-            $.getJSON("/Json/GetJson", null, function(data) {
-                $("#MyList").addItems(data);
-            });
+            $("#MyList").addItems(data);
+             
+            // $.getJSON("/Json/GetJson", null, function(data) {
+            //     $("#MyList").addItems(data);
+            // });
         });
 
         $.fn.addItems = function(data) {
@@ -20,11 +26,66 @@
             });
         };
 
+        
         $("#MyList").change(function() {
             alert('you selected ' + $(this).val());
         });
 
-    </script>-->
+       // append row to the HTML table
+        function appendRow() {
+            var tbl = document.getElementById('my-table'), // table reference
+                row = tbl.insertRow(tbl.rows.length),      // append table row
+                i;
+            // insert table cells to the new row
+            for (i = 0; i < tbl.rows[0].cells.length; i++) {
+                createCell(row.insertCell(i), i, 'row');
+            }
+        }
+        
+        // create DIV element and append to the table cell
+        function createCell(cell, text, style) {
+            var div = document.createElement('div'), // create DIV element
+                txt = document.createTextNode(text); // create text node
+            div.appendChild(txt);                    // append text node to the DIV
+            div.setAttribute('class', style);        // set DIV class attribute
+            div.setAttribute('className', style);    // set DIV class attribute for IE (?!)
+            cell.appendChild(div);                   // append DIV to the table cell
+        }
+        
+        // append column to the HTML table
+        function appendColumn() {
+            var tbl = document.getElementById('my-table'), // table reference
+                i;
+            // open loop for each row and append cell
+            for (i = 0; i < tbl.rows.length; i++) {
+                createCell(tbl.rows[i].insertCell(tbl.rows[i].cells.length), i, 'col');
+            }
+        }
+        
+        // delete table rows with index greater then 0
+        function deleteRows() {
+            var tbl = document.getElementById('my-table'), // table reference
+                lastRow = tbl.rows.length - 1,             // set the last row index
+                i;
+            // delete rows with index greater then 0
+            for (i = lastRow; i > 0; i--) {
+                tbl.deleteRow(i);
+            }
+        }
+        
+        // delete table columns with index greater then 0
+        function deleteColumns() {
+            var tbl = document.getElementById('my-table'), // table reference
+                lastCol = tbl.rows[0].cells.length - 1,    // set the last column index
+                i, j;
+            // delete cells with index greater then 0 (for each row)
+            for (i = 0; i < tbl.rows.length; i++) {
+                for (j = lastCol; j > 0; j--) {
+                    tbl.rows[i].deleteCell(j);
+                }
+            }
+        }
+    </script>
 <script>
     // just for the demos, avoids form submit
     jQuery.validator.setDefaults({
@@ -85,6 +146,17 @@
         width: 16px;
         height: 16px;
     }
+</style>
+
+<style>
+div#my-container input{padding:5px;font-size:12px !important;width:100px;margin:2px}
+table#my-table{border-collapse:collapse;width:0%}
+table#my-table td{width:50px;height:27px;border:1px solid #D3D3D3;text-align:center;padding:0;}
+.append_row{color:black !important;background-color:#FFD6D6 !important;border:1px #ccc solid !important;}
+.append_column{color:black !important;background-color:#D6FFD6 !important;border:1px #ccc solid !important;}
+.delete{color:black !important;background-color:#eee !important;border:1px #ccc solid !important;}
+.col{background-color:#D6FFD6 !important}
+.row{background-color:#FFD6D6 !important}
 </style>
 
 <script type="text/javascript">
@@ -437,14 +509,15 @@
 </script>
 <div class="row">
     <h1>jQuery Example</h1>
-
+    
     <p>
         <!--<select id="MyList" />-->
         <div class="btn-toolbar" id="btnToolBar">
             <div class="btn-group">
 
                 <button type="button" id="btnFirst" class="btn btn-info"><i class="fa fa-ban fa-fw"></i>First</button>
-
+               
+                
             </div>
             <div class="btn-group">
 
@@ -461,10 +534,47 @@
             <div class="btn-group">
                 <textarea rows="2" cols="2" id="resultb"></textarea> 
                 <button type="button" id="btnLast" class="btn btn-danger"><i class="fa fa-circle-o-notch fa-spin"></i>Last</button>
-
+                
+               
             </div>
 
         </div>
+        
+         <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">New Table Information</h3>
+            </div>
+            <div class="panel-body">
+                <div id="my-container">
+                    <center><br />
+                        <input type="button" value="Add row" onclick="javascript:appendRow()" class="append_row"/><br />
+                        <input type="button" value="Add column" onclick="javascript:appendColumn()" class="append_column"/><br />
+                        <input type="button" value="Delete rows" onclick="javascript:deleteRows()" class="delete"/><br />
+                        <input type="button" value="Delete columns" onclick="javascript:deleteColumns()" class="delete"/><br />
+                        <input type="button" value="Delete both" onclick="javascript:deleteColumns();deleteRows()" class="delete"/></p>
+                        <table id="my-table" align="center" cellspacing="0" cellpadding="0" border="0">
+                        <tr>
+                        <td>Small</td>
+                        <td></td>
+                        <td></td>
+                        </tr>
+                        <tr>
+                        <td></td>
+                        <td>HTML</td>
+                        <td></td>
+                        </tr>
+                        <tr>
+                        <td></td>
+                        <td></td>
+                        <td>table</td>
+                        </tr>
+                        </table>
+                    </center>
+                </div>
+            </div>  
+            
+        </div>
+        
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">User Information</h3>
@@ -490,7 +600,9 @@
                             </select>
                         </div>
                     </div>
-
+                    <label class="sr-only" for="">Country</label>
+                    <select type="text" class="form-control" name="country" id="MyList"/>
+                   
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
 
@@ -507,6 +619,7 @@
 <i class="fa fa-refresh fa-spin"></i>
 <i class="fa fa-cog fa-spin"></i>
 <i class="fa fa-spinner fa-pulse"></i>
+
 <div>
     <div class="btn-toolbar" id="btnToolBar2">
         <div class="btn-group">
